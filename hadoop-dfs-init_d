@@ -20,8 +20,6 @@ desc="Hadoop DFS daemons"
 
 start() {
   echo -n $"Starting $desc (hadoop): "
-  #start-stop-daemon --user root $HADOOP_INSTALL/bin/start-all.sh $1
-  #$HADOOP_INSTALL/bin/start-all.sh $1
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start namenode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start datanode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start secondarynamenode $1"
@@ -36,9 +34,9 @@ stop() {
   echo -n $"Stopping $desc (hadoop): "
   #start-stop-daemon --user root
   #$HADOOP_INSTALL/bin/stop-all.sh
-  runuser -l $SVC_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop secondarynamenode $1"
-  runuser -l $SVC_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop datanode $1"
-  runuser -l $SVC_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop namenode $1"
+  runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop secondarynamenode $1"
+  runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop datanode $1"
+  runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop namenode $1"
 
   RETVAL=$?
   echo
@@ -70,9 +68,9 @@ case "$1" in
   start)
     start
     ;;
-  upgrade)
-    upgrade
-    ;;
+  #upgrade)
+  #  upgrade
+  #  ;;
   #format)
   #  format
   #  ;;
