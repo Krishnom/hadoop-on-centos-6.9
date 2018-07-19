@@ -9,13 +9,10 @@
 #. /lib/lsb/init-functions
 . /etc/init.d/functions
 . /opt/hadoop/etc/hadoop/hadoop-env.sh
-export HADOOP_INSTALL=/opt/hadoop
-export HADOOP_PID_DIR=/bigdata/hdfs/pid
-export LOCKDIR=$HADOOP_PID_DIR
+export HADOOP_INSTALL=/home/hadoop/hadoop
 export HADOOP_USER=hadoop
 
 RETVAL=0
-PIDFILE=$HADOOP_PID_DIR/hadoop-namenode.pid
 desc="Hadoop DFS daemons"
 
 start() {
@@ -23,24 +20,13 @@ start() {
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start namenode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start datanode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon start secondarynamenode $1"
-
-  RETVAL=$?
-  echo
-  [ $RETVAL -eq 0 ] && touch $LOCKDIR/hadoop-dfs
-  return $RETVAL
 }
 
 stop() {
   echo -n $"Stopping $desc (hadoop): "
-  #start-stop-daemon --user root
-  #$HADOOP_INSTALL/bin/stop-all.sh
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop secondarynamenode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop datanode $1"
   runuser -l $HADOOP_USER -c "$HADOOP_INSTALL/bin/hdfs --daemon stop namenode $1"
-
-  RETVAL=$?
-  echo
-   [ $RETVAL -eq 0 ] && rm -f $LOCKDIR/hadoop-dfs $PIDFILE
 }
 
 checkstatus(){
@@ -84,7 +70,7 @@ case "$1" in
     restart
     ;;
   *)
-    echo $"Usage: $0 {start|stop|status|restart|try-restart}"
+    echo $"Usage: $0 {start|stop|status|restart}"
     exit 1
 esac
 
